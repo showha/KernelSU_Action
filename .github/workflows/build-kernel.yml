@@ -178,6 +178,8 @@ jobs:
         # export PATH=$GITHUB_WORKSPACE/kernel_workspace/clang-aosp/bin:$PATH
         # export PATH=$GITHUB_WORKSPACE/kernel_workspace/clang-aosp/Toolchain/gcc64/bin:$PATH
         # export PATH=$GITHUB_WORKSPACE/kernel_workspace/clang-aosp/Toolchain/gcc32/bin:$PATH
+        export PATH=$GITHUB_WORKSPACE/kernel_workspace/clang-aosp/bin:$PATH
+        export PATH=$GITHUB_WORKSPACE/kernel_workspace/gcc-aosp/bin:$PATH
         export KBUILD_BUILD_HOST=Github-Action
         export KBUILD_BUILD_USER=$(echo ${{ github.actor }} | tr A-Z a-z)
         # args="-j$(nproc --all) ARCH=arm64 SUBARCH=arm64 O=out CC=clang CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_ARM32=arm-linux-androideabi- CLANG_TRIPLE=aarch64-linux-gnu-"
