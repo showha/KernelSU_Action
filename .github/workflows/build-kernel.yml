@@ -112,14 +112,15 @@ jobs:
       run: |
         cd $GITHUB_WORKSPACE/kernel_workspace
         mkdir clang-aosp
-        cd clang-aosp
-        # wget https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/master-kernel-build-2022/clang-${{ env.CLANG_VERSION }}.tar.gz
-        wget https://gitlab.com/showha/clang-r383902b-android/-/raw/main/clang-r383902b.tar.zst
+        # cd clang-aosp
+        wget https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/master-kernel-build-2022/clang-${{ env.CLANG_VERSION }}.tar.gz
+        # wget https://gitlab.com/showha/clang-r383902b-android/-/raw/main/clang-r383902b.tar.zst
         # git clone --depth=1 https://gitlab.com/jjpprrrr/prelude-clang.git $GITHUB_WORKSPACE/kernel_workspace/clang-aosp
-        tar -I zstd -xvf clang-${{ env.CLANG_VERSION }}.tar.zst -C $GITHUB_WORKSPACE/kernel_workspace/clang-aosp/
-        # mkdir gcc-aosp
-        # wget https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/+archive/refs/tags/android-12.1.0_r27.tar.gz
-        # tar -C gcc-aosp/ -zxvf android-12.1.0_r27.tar.gz
+        # tar -I zstd -xvf clang-${{ env.CLANG_VERSION }}.tar.zst -C $GITHUB_WORKSPACE/kernel_workspace/clang-aosp/
+        tar -zxvf clang-${{ env.CLANG_VERSION }}.tar.gz -C $GITHUB_WORKSPACE/kernel_workspace/clang-aosp/
+        mkdir gcc-aosp
+        wget https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/+archive/refs/tags/android-12.1.0_r27.tar.gz
+        tar -C gcc-aosp/ -zxvf android-12.1.0_r27.tar.gz
 
     - name: Download mkbootimg tools
       if: env.MAKE_BOOT_IMAGE == 'true'
@@ -150,18 +151,18 @@ jobs:
       run: |
         cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel
         # sed '48c# CONFIG_CC_STACKPROTECTOR_STRONG is not set' arch/arm64/configs/cepheus_defconfig
-        rm -f arch/arm64/configs/cepheus_defconfig
-        cp $GITHUB_WORKSPACE/cepheus_defconfig  arch/arm64/configs
+        # rm -f arch/arm64/configs/cepheus_defconfig
+        # cp $GITHUB_WORKSPACE/cepheus_defconfig  arch/arm64/configs
         curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -
         if [ ${{ env.USE_KPROBES }} = true ]; then
-            echo "CONFIG_MODULES=y" >> arch/${{ env.TARGET_ARCH }}/configs/${{ env.KERNEL_DEFCONFIG }}
+            # echo "CONFIG_MODULES=y" >> arch/${{ env.TARGET_ARCH }}/configs/${{ env.KERNEL_DEFCONFIG }}
             echo "CONFIG_KPROBES=y" >> arch/${{ env.TARGET_ARCH }}/configs/${{ env.KERNEL_DEFCONFIG }}
             echo "CONFIG_HAVE_KPROBES=y" >> arch/${{ env.TARGET_ARCH }}/configs/${{ env.KERNEL_DEFCONFIG }}
             echo "CONFIG_KPROBE_EVENTS=y" >> arch/${{ env.TARGET_ARCH }}/configs/${{ env.KERNEL_DEFCONFIG }}
         fi
-        if [ ${{ env.USE_OVERLAYFS }} = true ]; then
-            echo "CONFIG_OVERLAY_FS=y" >> arch/${{ env.TARGET_ARCH }}/configs/${{ env.KERNEL_DEFCONFIG }}
-        fi
+        # if [ ${{ env.USE_OVERLAYFS }} = true ]; then
+        #     echo "CONFIG_OVERLAY_FS=y" >> arch/${{ env.TARGET_ARCH }}/configs/${{ env.KERNEL_DEFCONFIG }}
+        # fi
         if [ ${{ env.DISABLE-LTO }} = true ]; then
             sed -i 's/CONFIG_LTO=y/CONFIG_LTO=n/' arch/${{ env.TARGET_ARCH }}/configs/${{ env.KERNEL_DEFCONFIG }}
             sed -i 's/CONFIG_LTO_CLANG=y/CONFIG_LTO_CLANG=n/' arch/${{ env.TARGET_ARCH }}/configs/${{ env.KERNEL_DEFCONFIG }}
@@ -173,17 +174,17 @@ jobs:
     - name: Build kernel
       run: |
         cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel
-        export PATH=$GITHUB_WORKSPACE/kernel_workspace/clang-aosp/Toolchain/clang-r383902b/bin:$PATH
+        # export PATH=$GITHUB_WORKSPACE/kernel_workspace/clang-aosp/Toolchain/clang-r383902b/bin:$PATH
         # export PATH=$GITHUB_WORKSPACE/kernel_workspace/clang-aosp/bin:$PATH
-        export PATH=$GITHUB_WORKSPACE/kernel_workspace/clang-aosp/Toolchain/gcc64/bin:$PATH
-        export PATH=$GITHUB_WORKSPACE/kernel_workspace/clang-aosp/Toolchain/gcc32/bin:$PATH
+        # export PATH=$GITHUB_WORKSPACE/kernel_workspace/clang-aosp/Toolchain/gcc64/bin:$PATH
+        # export PATH=$GITHUB_WORKSPACE/kernel_workspace/clang-aosp/Toolchain/gcc32/bin:$PATH
         export KBUILD_BUILD_HOST=Github-Action
         export KBUILD_BUILD_USER=$(echo ${{ github.actor }} | tr A-Z a-z)
         # args="-j$(nproc --all) ARCH=arm64 SUBARCH=arm64 O=out CC=clang CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_ARM32=arm-linux-androideabi- CLANG_TRIPLE=aarch64-linux-gnu-"
-        # make -j$(nproc --all) O=out ARCH=${{ env.TARGET_ARCH }} CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=$GITHUB_WORKSPACE/kernel_workspace/gcc-aosp/bin/aarch64-linux-android- CC=clang ${{ env.BUILD_EXTRA_COMMAND }} ${{ env.KERNEL_DEFCONFIG }}
-        # make -j$(nproc --all) O=out ARCH=${{ env.TARGET_ARCH }} CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=$GITHUB_WORKSPACE/kernel_workspace/gcc-aosp/bin/aarch64-linux-android- CC=clang ${{ env.BUILD_EXTRA_COMMAND }}
-        make -j$(nproc --all) ARCH=arm64 SUBARCH=arm64 O=out CC=clang CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_ARM32=arm-linux-androideabi- CLANG_TRIPLE=aarch64-linux-gnu- ${{ env.BUILD_EXTRA_COMMAND }} ${{ env.KERNEL_DEFCONFIG }}
-        make -j$(nproc --all) ARCH=arm64 SUBARCH=arm64 O=out CC=clang CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_ARM32=arm-linux-androideabi- CLANG_TRIPLE=aarch64-linux-gnu- 2>&1 | tee kernel.log
+        make -j$(nproc --all) O=out ARCH=${{ env.TARGET_ARCH }} CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=$GITHUB_WORKSPACE/kernel_workspace/gcc-aosp/bin/aarch64-linux-android- CC=clang ${{ env.BUILD_EXTRA_COMMAND }} ${{ env.KERNEL_DEFCONFIG }}
+        make -j$(nproc --all) O=out ARCH=${{ env.TARGET_ARCH }} CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=$GITHUB_WORKSPACE/kernel_workspace/gcc-aosp/bin/aarch64-linux-android- CC=clang ${{ env.BUILD_EXTRA_COMMAND }}
+        # make -j$(nproc --all) ARCH=arm64 SUBARCH=arm64 O=out CC=clang CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_ARM32=arm-linux-androideabi- CLANG_TRIPLE=aarch64-linux-gnu- ${{ env.BUILD_EXTRA_COMMAND }} ${{ env.KERNEL_DEFCONFIG }}
+        # make -j$(nproc --all) ARCH=arm64 SUBARCH=arm64 O=out CC=clang CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_ARM32=arm-linux-androideabi- CLANG_TRIPLE=aarch64-linux-gnu- 2>&1 | tee kernel.log
 
 #     - name: Build kernel
 #       run: |
