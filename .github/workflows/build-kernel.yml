@@ -149,6 +149,7 @@ jobs:
       if: env.USE_KERNELSU == 'true'
       run: |
         cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel
+        sed '48c# CONFIG_CC_STACKPROTECTOR_STRONG is not set' arch/arm64/configs/cepheus_defconfig
         curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -
         if [ ${{ env.USE_KPROBES }} = true ]; then
             # echo "CONFIG_MODULES=y" >> arch/${{ env.TARGET_ARCH }}/configs/${{ env.KERNEL_DEFCONFIG }}
@@ -166,7 +167,6 @@ jobs:
             echo "CONFIG_LTO_NONE=y" >> arch/${{ env.TARGET_ARCH }}/configs/${{ env.KERNEL_DEFCONFIG }}
         fi
         echo "UPLOADNAME=-KernelSU" >> $GITHUB_ENV
-        sed '48c# CONFIG_CC_STACKPROTECTOR_STRONG is not set' arch/arm64/configs/cepheus_defconfig
 
     - name: Build kernel
       run: |
