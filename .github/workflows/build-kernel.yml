@@ -134,8 +134,8 @@ jobs:
       run: |
         cd $GITHUB_WORKSPACE/kernel_workspace
         git clone ${{ env.KERNEL_SOURCE }} -b ${{ env.KERNEL_SOURCE_BRANCH }} android-kernel --depth=2
-        rm -rf $GITHUB_WORKSPACE/kernel_workspace/android-kernel 
-        mkdir $GITHUB_WORKSPACE/kernel_workspace/android-kernel/fs/exfat
+        rm -rf $GITHUB_WORKSPACE/kernel_workspace/android-kernel/fs/exfat
+        mkdir -p $GITHUB_WORKSPACE/kernel_workspace/android-kernel/fs/exfat
         git clone --depth=2 https://github.com/arter97/exfat-linux $GITHUB_WORKSPACE/kernel_workspace/android-kernel/fs/exfat
         git submodule update --init
 
