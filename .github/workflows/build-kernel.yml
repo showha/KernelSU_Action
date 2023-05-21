@@ -189,8 +189,8 @@ jobs:
         # echo "CONFIG_IMG_GZ_DTB=y" >> arch/${{ env.TARGET_ARCH }}/configs/${{ env.KERNEL_DEFCONFIG }}
         # echo "CONFIG_BUILD_ARM64_APPENDED_KERNEL_IMAGE_NAME="Image.gz-dtb"" >> arch/${{ env.TARGET_ARCH }}/configs/${{ env.KERNEL_DEFCONFIG }}
         # echo "CONFIG_BUILD_ARM64_APPENDED_DTB_IMAGE_NAMES=""" >> arch/${{ env.TARGET_ARCH }}/configs/${{ env.KERNEL_DEFCONFIG }}
-        # echo "CONFIG_BUILD_ARM64_KERNEL_COMPRESSION_GZIP=y" >> arch/${{ env.TARGET_ARCH }}/configs/${{ env.KERNEL_DEFCONFIG }}
-        # echo "CONFIG_FB_CFB_IMAGEBLIT=y" >> arch/${{ env.TARGET_ARCH }}/configs/${{ env.KERNEL_DEFCONFIG }}
+        echo "CONFIG_BUILD_ARM64_KERNEL_COMPRESSION_GZIP=y" >> arch/${{ env.TARGET_ARCH }}/configs/${{ env.KERNEL_DEFCONFIG }}
+        echo "CONFIG_FB_CFB_IMAGEBLIT=y" >> arch/${{ env.TARGET_ARCH }}/configs/${{ env.KERNEL_DEFCONFIG }}
         # export PATH=$GITHUB_WORKSPACE/kernel_workspace/clang-aosp/Toolchain/gcc64/bin:$PATH
         # export PATH=$GITHUB_WORKSPACE/kernel_workspace/clang-aosp/Toolchain/gcc32/bin:$PATH
         # export PATH=$GITHUB_WORKSPACE/kernel_workspace/clang-aosp/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/bin:$PATH
