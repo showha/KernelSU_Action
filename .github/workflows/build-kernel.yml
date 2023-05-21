@@ -157,14 +157,14 @@ jobs:
         # cp $GITHUB_WORKSPACE/cepheus_defconfig  arch/arm64/configs
         curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -
         if [ ${{ env.USE_KPROBES }} = true ]; then
-            # echo "CONFIG_MODULES=y" >> arch/${{ env.TARGET_ARCH }}/configs/${{ env.KERNEL_DEFCONFIG }}
+            echo "CONFIG_MODULES=y" >> arch/${{ env.TARGET_ARCH }}/configs/${{ env.KERNEL_DEFCONFIG }}
             echo "CONFIG_KPROBES=y" >> arch/${{ env.TARGET_ARCH }}/configs/${{ env.KERNEL_DEFCONFIG }}
             echo "CONFIG_HAVE_KPROBES=y" >> arch/${{ env.TARGET_ARCH }}/configs/${{ env.KERNEL_DEFCONFIG }}
             echo "CONFIG_KPROBE_EVENTS=y" >> arch/${{ env.TARGET_ARCH }}/configs/${{ env.KERNEL_DEFCONFIG }}
         fi
-        # if [ ${{ env.USE_OVERLAYFS }} = true ]; then
-        #     echo "CONFIG_OVERLAY_FS=y" >> arch/${{ env.TARGET_ARCH }}/configs/${{ env.KERNEL_DEFCONFIG }}
-        # fi
+        if [ ${{ env.USE_OVERLAYFS }} = true ]; then
+            echo "CONFIG_OVERLAY_FS=y" >> arch/${{ env.TARGET_ARCH }}/configs/${{ env.KERNEL_DEFCONFIG }}
+        fi
         if [ ${{ env.DISABLE-LTO }} = true ]; then
             sed -i 's/CONFIG_LTO=y/CONFIG_LTO=n/' arch/${{ env.TARGET_ARCH }}/configs/${{ env.KERNEL_DEFCONFIG }}
             sed -i 's/CONFIG_LTO_CLANG=y/CONFIG_LTO_CLANG=n/' arch/${{ env.TARGET_ARCH }}/configs/${{ env.KERNEL_DEFCONFIG }}
@@ -179,15 +179,15 @@ jobs:
         # export PATH=$GITHUB_WORKSPACE/kernel_workspace/clang-aosp/Toolchain/clang-r383902b/bin:$PATH
         export PATH=$GITHUB_WORKSPACE/kernel_workspace/clang-aosp/bin:$PATH
         # fix someproblems
-        rm -f $GITHUB_WORKSPACE/kernel_workspace/android-kernel/drivers/Kconfig
-        cp $GITHUB_WORKSPACE/Kconfig $GITHUB_WORKSPACE/kernel_workspace/android-kernel/drivers
-        sed -i '24cfw-shipped-$(CONFIG_TOUCHSCREEN_ST_FTS_V521) += st_fts_f1.ftb'  $GITHUB_WORKSPACE/kernel_workspace/android-kernel/firmware/Makefile
-        echo "CONFIG_BUILD_ARM64_APPENDED_DTB_IMAGE=y" >> arch/${{ env.TARGET_ARCH }}/configs/${{ env.KERNEL_DEFCONFIG }}
-        echo "CONFIG_IMG_GZ_DTB=y" >> arch/${{ env.TARGET_ARCH }}/configs/${{ env.KERNEL_DEFCONFIG }}
-        echo "CONFIG_BUILD_ARM64_APPENDED_KERNEL_IMAGE_NAME="Image.gz-dtb"" >> arch/${{ env.TARGET_ARCH }}/configs/${{ env.KERNEL_DEFCONFIG }}
-        echo "CONFIG_BUILD_ARM64_APPENDED_DTB_IMAGE_NAMES=""" >> arch/${{ env.TARGET_ARCH }}/configs/${{ env.KERNEL_DEFCONFIG }}
-        echo "CONFIG_BUILD_ARM64_KERNEL_COMPRESSION_GZIP=y" >> arch/${{ env.TARGET_ARCH }}/configs/${{ env.KERNEL_DEFCONFIG }}
-        echo "CONFIG_FB_CFB_IMAGEBLIT=y" >> arch/${{ env.TARGET_ARCH }}/configs/${{ env.KERNEL_DEFCONFIG }}
+        # rm -f $GITHUB_WORKSPACE/kernel_workspace/android-kernel/drivers/Kconfig
+        # cp $GITHUB_WORKSPACE/Kconfig $GITHUB_WORKSPACE/kernel_workspace/android-kernel/drivers
+        # sed -i '24cfw-shipped-$(CONFIG_TOUCHSCREEN_ST_FTS_V521) += st_fts_f1.ftb'  $GITHUB_WORKSPACE/kernel_workspace/android-kernel/firmware/Makefile
+        # echo "CONFIG_BUILD_ARM64_APPENDED_DTB_IMAGE=y" >> arch/${{ env.TARGET_ARCH }}/configs/${{ env.KERNEL_DEFCONFIG }}
+        # echo "CONFIG_IMG_GZ_DTB=y" >> arch/${{ env.TARGET_ARCH }}/configs/${{ env.KERNEL_DEFCONFIG }}
+        # echo "CONFIG_BUILD_ARM64_APPENDED_KERNEL_IMAGE_NAME="Image.gz-dtb"" >> arch/${{ env.TARGET_ARCH }}/configs/${{ env.KERNEL_DEFCONFIG }}
+        # echo "CONFIG_BUILD_ARM64_APPENDED_DTB_IMAGE_NAMES=""" >> arch/${{ env.TARGET_ARCH }}/configs/${{ env.KERNEL_DEFCONFIG }}
+        # echo "CONFIG_BUILD_ARM64_KERNEL_COMPRESSION_GZIP=y" >> arch/${{ env.TARGET_ARCH }}/configs/${{ env.KERNEL_DEFCONFIG }}
+        # echo "CONFIG_FB_CFB_IMAGEBLIT=y" >> arch/${{ env.TARGET_ARCH }}/configs/${{ env.KERNEL_DEFCONFIG }}
         # export PATH=$GITHUB_WORKSPACE/kernel_workspace/clang-aosp/Toolchain/gcc64/bin:$PATH
         # export PATH=$GITHUB_WORKSPACE/kernel_workspace/clang-aosp/Toolchain/gcc32/bin:$PATH
         # export PATH=$GITHUB_WORKSPACE/kernel_workspace/clang-aosp/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/bin:$PATH
