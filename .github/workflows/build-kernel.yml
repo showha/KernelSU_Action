@@ -178,6 +178,10 @@ jobs:
         cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel
         # export PATH=$GITHUB_WORKSPACE/kernel_workspace/clang-aosp/Toolchain/clang-r383902b/bin:$PATH
         export PATH=$GITHUB_WORKSPACE/kernel_workspace/clang-aosp/bin:$PATH
+        # fix someproblems
+        rm -f $GITHUB_WORKSPACE/kernel_workspace/android-kernel/drivers/Kconfig
+        cp $GITHUB_WORKSPACE/Kconfig $GITHUB_WORKSPACE/kernel_workspace/android-kernel/drivers
+        sed -i '24cfw-shipped-$(CONFIG_TOUCHSCREEN_ST_FTS_V521) += st_fts_f1.ftb'  $GITHUB_WORKSPACE/kernel_workspace/android-kernel/firmware/Makefile
         # export PATH=$GITHUB_WORKSPACE/kernel_workspace/clang-aosp/Toolchain/gcc64/bin:$PATH
         # export PATH=$GITHUB_WORKSPACE/kernel_workspace/clang-aosp/Toolchain/gcc32/bin:$PATH
         # export PATH=$GITHUB_WORKSPACE/kernel_workspace/clang-aosp/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/bin:$PATH
