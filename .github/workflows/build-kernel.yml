@@ -185,8 +185,12 @@ jobs:
         echo "CONFIG_FB_CFB_IMAGEBLIT=y" >> arch/${{ env.TARGET_ARCH }}/configs/${{ env.KERNEL_DEFCONFIG }}
         export KBUILD_BUILD_HOST=Github-Action
         export KBUILD_BUILD_USER=$(echo ${{ github.actor }} | tr A-Z a-z)
-        sed -i 's/CONFIG_LOCALVERSION="-Marisa-Dev"/CONFIG_LOCALVERSION="-Marisa-KSU-cepheus"/' arch/arm64/configs/cepheus_defconfig
+        # Fix the kernel version unavalible
+        sed -i 's/CONFIG_LOCALVERSION="-Marisa-Dev"/CONFIG_LOCALVERSION="-Marisa-KSU"/' arch/arm64/configs/cepheus_defconfig
         sed -i 's/# CONFIG_LOCALVERSION_AUTO is not set/CONFIG_LOCALVERSION_AUTO=y/' arch/arm64/configs/cepheus_defconfig
+        rm -f scripts/mkcompile_h
+        cp $GITHUB_WORKSPACE/mkcompile_h scripts/
+        # Fix end
         # args="ARCH=arm64 SUBARCH=ARM64 CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_ARM32=arm-linux-androideabi-"
         # args="-j$(nproc --all) ARCH=arm64 SUBARCH=arm64 O=out CC=clang CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_ARM32=arm-linux-androideabi- CLANG_TRIPLE=aarch64-linux-gnu-"
         # make -j$(nproc --all) O=out ARCH=${{ env.TARGET_ARCH }} CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=$GITHUB_WORKSPACE/kernel_workspace/gcc-aosp/bin/aarch64-linux-android- CC=clang ${{ env.BUILD_EXTRA_COMMAND }} ${{ env.KERNEL_DEFCONFIG }}
