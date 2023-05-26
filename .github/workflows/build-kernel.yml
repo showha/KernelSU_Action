@@ -73,9 +73,9 @@ name: Build Kernel
 on:
   watch:
     types: [started]
-
+  schedule:
+    - cron: '0 8 * * */5'
   workflow_dispatch:
-
 jobs:
   build:
     name: Build Kernel by ${{ github.actor }}
@@ -187,7 +187,7 @@ jobs:
         export KBUILD_BUILD_USER=$(echo ${{ github.actor }} | tr A-Z a-z)
         # Fix the kernel version unavalible
         sed -i 's/CONFIG_LOCALVERSION="-Marisa-Dev"/CONFIG_LOCALVERSION="-Marisa-KSU"/' arch/arm64/configs/cepheus_defconfig
-        sed -i 's/# CONFIG_LOCALVERSION_AUTO is not set/CONFIG_LOCALVERSION_AUTO=y/' arch/arm64/configs/cepheus_defconfig
+        # sed -i 's/# CONFIG_LOCALVERSION_AUTO is not set/CONFIG_LOCALVERSION_AUTO=y/' arch/arm64/configs/cepheus_defconfig
         rm -f scripts/mkcompile_h
         cp $GITHUB_WORKSPACE/mkcompile_h scripts/
         # Fix end
@@ -268,26 +268,26 @@ jobs:
             echo "Boot image is empty"
         fi
     
-    - name: Upload ${{ env.KERNEL_FILE }}
-      if: env.CHECK_FILE_IS_OK == 'true'
-      uses: actions/upload-artifact@v3
-      with:
-        name: ${{ env.KERNEL_FILE }}${{ env.UPLOADNAME }}-${{ env.DEVICE }}-${{ env.BUILD_TIME }}
-        path: kernel_workspace/android-kernel/out/arch/${{ env.TARGET_ARCH }}/boot/${{ env.KERNEL_FILE }}
+#     - name: Upload ${{ env.KERNEL_FILE }}
+#       if: env.CHECK_FILE_IS_OK == 'true'
+#       uses: actions/upload-artifact@v3
+#       with:
+#         name: ${{ env.KERNEL_FILE }}${{ env.UPLOADNAME }}-${{ env.DEVICE }}-${{ env.BUILD_TIME }}
+#         path: kernel_workspace/android-kernel/out/arch/${{ env.TARGET_ARCH }}/boot/${{ env.KERNEL_FILE }}
 
     - name: Upload AnyKernel3
       if: env.CHECK_FILE_IS_OK == 'true'
       uses: actions/upload-artifact@v3
       with:
-        name: AnyKernel3${{ env.UPLOADNAME }}-${{ env.DEVICE }}-${{ env.BUILD_TIME }}
+        name: ${{ env.UPLOADNAME }}-${{ env.DEVICE }}-${{ env.BUILD_TIME }}-69hz
         path: kernel_workspace/anykernel/*
 
-    - name: Upload DTBO image
-      if: env.CHECK_DTBO_IS_OK == 'true'
-      uses: actions/upload-artifact@v3
-      with:
-        name: dtbo-${{ env.DEVICE }}-${{ env.BUILD_TIME }}
-        path: kernel_workspace/android-kernel/out/arch/${{ env.TARGET_ARCH }}/boot/dtbo.img
+#     - name: Upload DTBO image
+#       if: env.CHECK_DTBO_IS_OK == 'true'
+#       uses: actions/upload-artifact@v3
+#       with:
+#         name: dtbo-${{ env.DEVICE }}-${{ env.BUILD_TIME }}
+#         path: kernel_workspace/android-kernel/out/arch/${{ env.TARGET_ARCH }}/boot/dtbo.img
 
     - name: Upload boot image
       if: env.MAKE_BOOT_IMAGE_IS_OK == 'true'
