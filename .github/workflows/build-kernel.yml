@@ -158,7 +158,8 @@ jobs:
         # sed '48c# CONFIG_CC_STACKPROTECTOR_STRONG is not set' arch/arm64/configs/cepheus_defconfig
         # rm -f arch/arm64/configs/cepheus_defconfig
         # cp $GITHUB_WORKSPACE/cepheus_defconfig  arch/arm64/configs
-        curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -
+        # curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -
+        curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s main
         if [ ${{ env.USE_KPROBES }} = true ]; then
             echo "CONFIG_MODULES=y" >> arch/${{ env.TARGET_ARCH }}/configs/${{ env.KERNEL_DEFCONFIG }}
             echo "CONFIG_KPROBES=y" >> arch/${{ env.TARGET_ARCH }}/configs/${{ env.KERNEL_DEFCONFIG }}
