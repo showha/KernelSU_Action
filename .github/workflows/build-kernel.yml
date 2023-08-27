@@ -175,7 +175,7 @@ jobs:
             sed -i 's/CONFIG_THINLTO=y/CONFIG_THINLTO=n/' arch/${{ env.TARGET_ARCH }}/configs/${{ env.KERNEL_DEFCONFIG }}
             echo "CONFIG_LTO_NONE=y" >> arch/${{ env.TARGET_ARCH }}/configs/${{ env.KERNEL_DEFCONFIG }}
         fi
-        echo "UPLOADNAME=-KernelSU" >> $GITHUB_ENV
+        echo "UPLOADNAME=KernelSU" >> $GITHUB_ENV
 
     - name: Build kernel
       run: |
