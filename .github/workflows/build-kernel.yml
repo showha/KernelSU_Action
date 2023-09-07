@@ -1,74 +1,3 @@
-# name: build_kernel
-
-# env:
-#   KERNEL_SOURCE: 'https://github.com/Laulan56/android_kernel_xiaomi_sm8150'
-#   KERNEL_SOURCE_BRANCH: 'android13'
-#   KERNEL_DEFCONFIG: 'cepheus_defconfig'
-#   KERNEL_NAME: 'Marisa'
-
-# on:
-# #   schedule:
-# #     - cron: '0 8 * * */5'
-#   workflow_dispatch:
-# jobs:
-#   build:
-#     runs-on: ubuntu-22.04
-#     steps:
-#       - uses: actions/checkout@v3
-      
-#       - name: download kernel source
-#         run: |
-#           cd $GITHUB_WORKSPACE && mkdir kernel_workspace && cd kernel_workspace
-#           git clone ${{ env.KERNEL_SOURCE }} -b ${{ env.KERNEL_SOURCE_BRANCH }} android-kernel --depth=1
-          
-#       - name: kernel patch 
-#         run: |
-#           cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel
-#           cp ../../buid.sh .
-#           cp ../../anykernel.sh .
-          
-#           # rm $GITHUB_WORKSPACE/kernel_workspace/android-kernel/scripts/dtc/yamltree.c
-#           # cp $GITHUB_WORKSPACE/patch/EcrosoftXiao_kernel/scripts/dtc/* $GITHUB_WORKSPACE/kernel_workspace/android-kernel/scripts/dtc
-          
-#           sed -i '/supported.versions.*/d' anykernel.sh
-#           sed -i '/do.devicecheck.*/d' anykernel.sh
-          
-#           #sed -i 's/KERNEL_NAME=.*/KERNEL_NAME=${{ env.KERNEL_NAME}}-$DATE/g' build.sh
-#           #sed -i "s/KERNEL_NAME=.*/KERNEL_NAME=${{env.KERNEL_NAME}}-"$(date "+%Y%m%d%H%M%S")"/g" build.sh
-        
-        
-#       - name: add kernelsu 
-#         run: |
-#             cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel
-            
-#             echo "CONFIG_KPROBES=y" >> arch/arm64/configs/${{ env.KERNEL_DEFCONFIG }}
-#             echo "CONFIG_HAVE_KPROBES=y" >> arch/arm64/configs/${{ env.KERNEL_DEFCONFIG }}
-#             echo "CONFIG_KPROBE_EVENTS=y" >> arch/arm64/configs/${{ env.KERNEL_DEFCONFIG }}
-            
-#             curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -
-            
-#             #git clone https://github.com/nozomanai/KernelSU.git
-#             #bash KernelSU/kernel/setup.sh
-            
-#       - name: build kernel
-#         run: |
-#           cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel
-#           echo "BUILD_TIME=$(TZ=Asia/Shanghai date "+%Y%m%d%H%M%S")" >> $GITHUB_ENV
-#           rm .git -R
-#           sudo bash buid.sh
-
-          
-#       - name: release
-#         uses: "marvinpinto/action-automatic-releases@latest"
-#         with:
-#           automatic_release_tag: "${{ env.BUILD_TIME }}"
-#           repo_token: "${{ secrets.GITHUB_TOKEN }}"
-#           prerelease: false
-#           files: |
-#             kernel_workspace/android-kernel/out/*.zip
-
-
-
 name: Build Kernel
 on:
   watch:
@@ -113,14 +42,8 @@ jobs:
       run: |
         cd $GITHUB_WORKSPACE/kernel_workspace
         mkdir clang-aosp
-        # cd clang-aosp
-        # wget https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/master-kernel-build-2022/clang-${{ env.CLANG_VERSION }}.tar.gz
-        # wget https://gitlab.com/showha/clang-r383902b-android/-/raw/main/clang-r383902b.tar.zst
         git clone --depth=1 https://gitlab.com/jjpprrrr/prelude-clang.git $GITHUB_WORKSPACE/kernel_workspace/clang-aosp
         # git clone --depth=1 https://github.com/kdrag0n/proton-clang  $GITHUB_WORKSPACE/kernel_workspace/clang-aosp
-        # tar -I zstd -xvf clang-${{ env.CLANG_VERSION }}.tar.zst -C $GITHUB_WORKSPACE/kernel_workspace/clang-aosp/
-        # tar -zxvf clang-${{ env.CLANG_VERSION }}.tar.gz -C $GITHUB_WORKSPACE/kernel_workspace/clang-aosp/
-        # mkdir gcc-aosp
         # wget https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/+archive/refs/tags/android-12.1.0_r27.tar.gz
         # tar -C gcc-aosp/ -zxvf android-12.1.0_r27.tar.gz
 
@@ -133,13 +56,13 @@ jobs:
     - name: Download kernel source
       run: |
         cd $GITHUB_WORKSPACE/kernel_workspace
-        git clone ${{ env.KERNEL_SOURCE }} -b ${{ env.KERNEL_SOURCE_BRANCH }} android-kernel --depth=2
-        rm -rf $GITHUB_WORKSPACE/kernel_workspace/android-kernel/fs/exfat
-        mkdir -p $GITHUB_WORKSPACE/kernel_workspace/android-kernel/fs/exfat
-        git clone --depth=1 https://github.com/arter97/exfat-linux $GITHUB_WORKSPACE/kernel_workspace/android-kernel/fs/exfat
-        git submodule update --init
+        git clone ${{ env.KERNEL_SOURCE }} -b ${{ env.KERNEL_SOURCE_BRANCH }} android-kernel --depth=1
         rm -rf $GITHUB_WORKSPACE/kernel_workspace/android-kernel/arch/${{ env.TARGET_ARCH }}/configs/${{ env.KERNEL_DEFCONFIG }}
         mv $GITHUB_WORKSPACE/cepheus_defconfig $GITHUB_WORKSPACE/kernel_workspace/android-kernel/arch/${{ env.TARGET_ARCH }}
+        # rm -rf $GITHUB_WORKSPACE/kernel_workspace/android-kernel/fs/exfat
+        # mkdir -p $GITHUB_WORKSPACE/kernel_workspace/android-kernel/fs/exfat
+        # git clone --depth=1 https://github.com/arter97/exfat-linux $GITHUB_WORKSPACE/kernel_workspace/android-kernel/fs/exfat
+        # git submodule update --init
 
     - name: Download source boot image
       if: env.MAKE_BOOT_IMAGE == 'true'
@@ -161,7 +84,7 @@ jobs:
         # rm -f arch/arm64/configs/cepheus_defconfig
         # cp $GITHUB_WORKSPACE/cepheus_defconfig  arch/arm64/configs
         # curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -
-        curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s main
+        curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -
         if [ ${{ env.USE_KPROBES }} = true ]; then
             echo "CONFIG_MODULES=y" >> arch/${{ env.TARGET_ARCH }}/configs/${{ env.KERNEL_DEFCONFIG }}
             echo "CONFIG_KPROBES=y" >> arch/${{ env.TARGET_ARCH }}/configs/${{ env.KERNEL_DEFCONFIG }}
