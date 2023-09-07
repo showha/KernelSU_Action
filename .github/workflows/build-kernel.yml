@@ -116,8 +116,8 @@ jobs:
         # cd clang-aosp
         # wget https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/master-kernel-build-2022/clang-${{ env.CLANG_VERSION }}.tar.gz
         # wget https://gitlab.com/showha/clang-r383902b-android/-/raw/main/clang-r383902b.tar.zst
-        # git clone --depth=1 https://gitlab.com/jjpprrrr/prelude-clang.git $GITHUB_WORKSPACE/kernel_workspace/clang-aosp
-        git clone --depth=1 https://github.com/kdrag0n/proton-clang  $GITHUB_WORKSPACE/kernel_workspace/clang-aosp
+        git clone --depth=1 https://gitlab.com/jjpprrrr/prelude-clang.git $GITHUB_WORKSPACE/kernel_workspace/clang-aosp
+        # git clone --depth=1 https://github.com/kdrag0n/proton-clang  $GITHUB_WORKSPACE/kernel_workspace/clang-aosp
         # tar -I zstd -xvf clang-${{ env.CLANG_VERSION }}.tar.zst -C $GITHUB_WORKSPACE/kernel_workspace/clang-aosp/
         # tar -zxvf clang-${{ env.CLANG_VERSION }}.tar.gz -C $GITHUB_WORKSPACE/kernel_workspace/clang-aosp/
         # mkdir gcc-aosp
