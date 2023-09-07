@@ -57,8 +57,8 @@ jobs:
       run: |
         cd $GITHUB_WORKSPACE/kernel_workspace
         git clone ${{ env.KERNEL_SOURCE }} -b ${{ env.KERNEL_SOURCE_BRANCH }} android-kernel --depth=1
-        rm -rf $GITHUB_WORKSPACE/kernel_workspace/android-kernel/arch/${{ env.TARGET_ARCH }}/configs/${{ env.KERNEL_DEFCONFIG }}
-        mv $GITHUB_WORKSPACE/cepheus_defconfig $GITHUB_WORKSPACE/kernel_workspace/android-kernel/arch/${{ env.TARGET_ARCH }}
+        # rm -rf $GITHUB_WORKSPACE/kernel_workspace/android-kernel/arch/${{ env.TARGET_ARCH }}/configs/${{ env.KERNEL_DEFCONFIG }}
+        # mv $GITHUB_WORKSPACE/cepheus_defconfig $GITHUB_WORKSPACE/kernel_workspace/android-kernel/arch/${{ env.TARGET_ARCH }}
         # rm -rf $GITHUB_WORKSPACE/kernel_workspace/android-kernel/fs/exfat
         # mkdir -p $GITHUB_WORKSPACE/kernel_workspace/android-kernel/fs/exfat
         # git clone --depth=1 https://github.com/arter97/exfat-linux $GITHUB_WORKSPACE/kernel_workspace/android-kernel/fs/exfat
