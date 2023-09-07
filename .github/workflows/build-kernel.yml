@@ -136,7 +136,7 @@ jobs:
         git clone ${{ env.KERNEL_SOURCE }} -b ${{ env.KERNEL_SOURCE_BRANCH }} android-kernel --depth=2
         rm -rf $GITHUB_WORKSPACE/kernel_workspace/android-kernel/fs/exfat
         mkdir -p $GITHUB_WORKSPACE/kernel_workspace/android-kernel/fs/exfat
-        git clone --depth=2 https://github.com/arter97/exfat-linux $GITHUB_WORKSPACE/kernel_workspace/android-kernel/fs/exfat
+        git clone --depth=1 https://github.com/arter97/exfat-linux $GITHUB_WORKSPACE/kernel_workspace/android-kernel/fs/exfat
         git submodule update --init
 
     - name: Download source boot image
@@ -283,12 +283,12 @@ jobs:
         name: ${{ env.UPLOADNAME }}-${{ env.DEVICE }}-${{ env.BUILD_TIME }}-69hz
         path: kernel_workspace/anykernel/*
 
-#     - name: Upload DTBO image
-#       if: env.CHECK_DTBO_IS_OK == 'true'
-#       uses: actions/upload-artifact@v3
-#       with:
-#         name: dtbo-${{ env.DEVICE }}-${{ env.BUILD_TIME }}
-#         path: kernel_workspace/android-kernel/out/arch/${{ env.TARGET_ARCH }}/boot/dtbo.img
+    - name: Upload DTBO image
+      if: env.CHECK_DTBO_IS_OK == 'true'
+      uses: actions/upload-artifact@v3
+      with:
+        name: dtbo-${{ env.DEVICE }}-${{ env.BUILD_TIME }}
+        path: kernel_workspace/android-kernel/out/arch/${{ env.TARGET_ARCH }}/boot/dtbo.img
 
     - name: Upload boot image
       if: env.MAKE_BOOT_IMAGE_IS_OK == 'true'
