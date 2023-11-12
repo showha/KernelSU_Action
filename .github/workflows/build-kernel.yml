@@ -74,7 +74,7 @@ on:
   watch:
     types: [started]
   schedule:
-    - cron: '0 8 * * */5'
+    - cron: '0 8 * * */6'
   workflow_dispatch:
 jobs:
   build:
@@ -243,17 +243,18 @@ jobs:
       if: env.CHECK_FILE_IS_OK == 'true'
       run: |
         cd $GITHUB_WORKSPACE/kernel_workspace
-        # git clone https://github.com/osm0sis/AnyKernel3
-        git clone https://github.com/Laulan56/anykernel -b miui-r
+        mkdir anykernel
+        git clone https://github.com/osm0sis/AnyKernel3 anykernel
+        # git clone https://github.com/Laulan56/anykernel -b miui-r
         # sed -i 's/do.devicecheck=1/do.devicecheck=0/g' anykernel/anykernel.sh
         # sed -i 's!block=/dev/block/platform/omap/omap_hsmmc.0/by-name/boot;!block=auto;!g' AnyKernel3/anykernel.sh
         # sed -i 's/is_slot_device=0;/is_slot_device=auto;/g' AnyKernel3/anykernel.sh
         cp android-kernel/out/arch/${{ env.TARGET_ARCH }}/boot/${{ env.KERNEL_FILE }} anykernel/
         rm -rf anykernel/anykernel.sh
         cp $GITHUB_WORKSPACE/anykernel.sh anykernel/
-        # if [ ${{ env.CHECK_DTBO_IS_OK }} = true ]; then
-        #     cp android-kernel/out/arch/${{ env.TARGET_ARCH }}/boot/dtbo.img anykernel/
-        # fi
+        if [ ${{ env.CHECK_DTBO_IS_OK }} = true ]; then
+            cp android-kernel/out/arch/${{ env.TARGET_ARCH }}/boot/dtbo.img anykernel/
+        fi
         rm -rf anykernel/.git* anykernel/README.md
 
     - name: Make boot image
