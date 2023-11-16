@@ -168,7 +168,7 @@ jobs:
       if: env.CHECK_FILE_IS_OK == 'true'
       run: |
         cd $GITHUB_WORKSPACE/kernel_workspace
-        mikdir anykernel
+        mkdir anykernel
         git clone https://github.com/osm0sis/AnyKernel3 anykernel
         # git clone https://github.com/Laulan56/anykernel -b miui-r
         # sed -i 's/do.devicecheck=1/do.devicecheck=0/g' anykernel/anykernel.sh
