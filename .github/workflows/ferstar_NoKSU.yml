@@ -23,7 +23,7 @@ jobs:
           # echo "KERNEL_SOURCE=$(cat config.env | grep "KERNEL_SOURCE" | head -n 1 | cut -d "=" -f 2)" >> $GITHUB_ENV
           mkdir android-kernel
           # DIR=`pwd`
-          echo "PARENT_DIR=$GITHUB_WORKSPACE/kernel_workspace" >> $GITHUB_ENV
+          echo "PARENT_DIR=${GITHUB_WORKSPACE}/kernel_workspace" >> $GITHUB_ENV
           echo "KERNEL_DIR=`readlink -f ${PARENT_DIR}/android-kernel`" >> $GITHUB_ENV
 
           echo "CROSS_COMPILE=${PARENT_DIR}/clang-r416183b/bin/aarch64-linux-gnu-" >> $GITHUB_ENV
