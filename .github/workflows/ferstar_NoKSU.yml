@@ -61,13 +61,13 @@ jobs:
       - name: Download Clang && Gas && Build_tools
         run: |
           cd ${{ PARENT_DIR }}
-          git clone https://github.com/crdroidandroid/android_prebuilts_clang_host_linux-x86_clang-r416183b $PARENT_DIR/clang-r416183b --depth=1
+          git clone https://github.com/crdroidandroid/android_prebuilts_clang_host_linux-x86_clang-r416183b ${{ env.PARENT_DIR }}/clang-r416183b --depth=1
           git clone https://android.googlesource.com/platform/prebuilts/gas/linux-x86 ${{ env.PARENT_DIR }}/gas/linux-x86 --depth=1
           git clone https://android.googlesource.com/platform/prebuilts/build-tools ${{ env.PARENT_DIR }}/build-tools --depth=1
       
       - name: Build Kernel
         run: |
-          cd $KERNEL_DIR
+          cd ${{ env.KERNEL_DIR }}
           mkdir out
           make CC="ccache clang" CXX="ccache clang++" -j$(nproc) -C $(pwd) ${{ env.KERNEL_MAKE_ENV }} gki_defconfig
           make CC="ccache clang" CXX="ccache clang++" -j$(nproc) -C $(pwd) ${{ env.KERNEL_MAKE_ENV }}
