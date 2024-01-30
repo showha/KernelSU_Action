@@ -101,9 +101,11 @@ jobs:
         run: |
           cd ${{ env.KERNEL_DIR }}
 
+          ls -a ${{ env.KERNEL_DIR }}/out/arch/arm64/boot/
+
           mkdir -p tmp
 
-          cp -fp ${{ env.KERNEL_DIR }}/arch/arm64/boot/Image.gz tmp
+          cp -fp ${{ env.KERNEL_DIR }}/out/arch/arm64/boot/Image.gz tmp
           cp -rp ./anykernel/* tmp
 
           cd tmp
