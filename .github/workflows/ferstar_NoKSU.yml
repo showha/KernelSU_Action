@@ -50,7 +50,7 @@ jobs:
             # git clone https://github.com/nozomanai/KernelSU.git
             # bash KernelSU/kernel/setup.sh
             
-      - name: Set up env
+      - name: Setup env
         run: |
           DIR=`readlink -f .`
           MAIN=`readlink -f ${DIR}/..`
@@ -58,7 +58,7 @@ jobs:
           THREAD="-j$(nproc --all)"
           export PATH=${CLANG_PATH}:${PATH}
           export CLANG_TRIPLE=aarch64-linux-gnu-
-          export CROSS_COMPILE=$MAIN/clang-r416183b/bin/aarch64-linux-gnu- CC=clang CXX=clang++
+          export CROSS_COMPILE=$GITHUB_WORKSPACE/kernel_workspace/clang-aosp/bin CC=clang CXX=clang++
           DEFCONFIG="gki_defconfig"
 
           # Paths
