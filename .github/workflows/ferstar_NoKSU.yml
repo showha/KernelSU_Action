@@ -80,9 +80,9 @@ jobs:
           cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel
 
           rm .git -R
-          make CC="ccache clang" CXX="ccache clang++" LLVM=1 LLVM_IAS=1 O=out $GITHUB_WORKSPACE/kernel_workspace/android-kernel/arch/arm64/configs/$DEFCONFIG
-          make CC="ccache clang" CXX="ccache clang++" LLVM=1 LLVM_IAS=1 O=out $GITHUB_WORKSPACE/kernel_workspace/android-kernel/arch/arm64/configs/menuconfig
-          make CC='ccache clang' CXX="ccache clang++" LLVM=1 LLVM_IAS=1 O=out $THREAD \
+          make LLVM=1 LLVM_IAS=1 O=out arch/arm64/configs/gki_defconfig
+          make LLVM=1 LLVM_IAS=1 O=out arch/arm64/configs/xaga_defconfig
+          make LLVM=1 LLVM_IAS=1 O=out $THREAD \
               LOCALVERSION=-Android12-9-v$(date +%Y%m%d-%H) \
               CONFIG_LOCALVERSION_AUTO=n \
               CONFIG_LOCALVERSION="-ferstart-NoKSU" \
