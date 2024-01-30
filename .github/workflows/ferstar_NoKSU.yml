@@ -26,22 +26,23 @@ jobs:
           echo "PARENT_DIR=${GITHUB_WORKSPACE}/kernel_workspace" >> $GITHUB_ENV
           echo "KERNEL_DIR=${GITHUB_WORKSPACE}/kernel_workspace/android-kernel" >> $GITHUB_ENV
 
-          echo "CROSS_COMPILE=${GITHUB_WORKSPACE}/kernel_workspace/clang-r416183b/bin/aarch64-linux-gnu-" >> $GITHUB_ENV
-          echo "CC=${GITHUB_WORKSPACE}/kernel_workspace/clang-r416183b/bin/clang" >> $GITHUB_ENV
+          # echo "CROSS_COMPILE=${GITHUB_WORKSPACE}/kernel_workspace/clang-r416183b/bin/aarch64-linux-gnu-" >> $GITHUB_ENV
+          # echo "CC=${GITHUB_WORKSPACE}/kernel_workspace/clang-r416183b/bin/clang" >> $GITHUB_ENV
 
-          echo "PLATFORM_VERSION=12" >> $GITHUB_ENV
-          echo "ANDROID_MAJOR_VERSION=s" >> $GITHUB_ENV
-          echo "PATH=${GITHUB_WORKSPACE}/kernel_workspace/clang-r416183b/bin:$PATH" >> $GITHUB_ENV
-          echo "PATH=${GITHUB_WORKSPACE}/kernel_workspace/build-tools/path/linux-x86:$PATH" >> $GITHUB_ENV
-          echo "PATH=${GITHUB_WORKSPACE}/kernel_workspace/gas/linux-x86:$PATH" >> $GITHUB_ENV
-          echo "TARGET_SOC=s5e9925" >> $GITHUB_ENV
-          echo "LLVM=1" >> $GITHUB_ENV
-          echo "LLVM_IAS=1" >> $GITHUB_ENV
-          echo "ARCH=arm64" >> $GITHUB_ENV
-          echo "USE_CCACHE=1" >> $GITHUB_ENV
+          # echo "PLATFORM_VERSION=12" >> $GITHUB_ENV
+          # echo "ANDROID_MAJOR_VERSION=s" >> $GITHUB_ENV
+          # echo "PATH=${GITHUB_WORKSPACE}/kernel_workspace/clang-r416183b/bin:$PATH" >> $GITHUB_ENV
+          # echo "PATH=${GITHUB_WORKSPACE}/kernel_workspace/build-tools/path/linux-x86:$PATH" >> $GITHUB_ENV
+          # echo "PATH=${GITHUB_WORKSPACE}/kernel_workspace/gas/linux-x86:$PATH" >> $GITHUB_ENV
+          # echo "TARGET_SOC=s5e9925" >> $GITHUB_ENV
+          # echo "LLVM=1" >> $GITHUB_ENV
+          # echo "LLVM_IAS=1" >> $GITHUB_ENV
+          # echo "LD=${GITHUB_WORKSPACE}/kernel_workspace/clang-r416183b/bin/ld.lld"
+          # echo "ARCH=arm64" >> $GITHUB_ENV
+          # echo "USE_CCACHE=1" >> $GITHUB_ENV
 
-          KERNEL_MAKE_ENV="LOCALVERSION=-Android12-9-v$(date +%Y%m%d) CONFIG_LTO_CLANG=y CONFIG_LTO_NONE=n CONFIG_LTO_CLANG_THIN=y CONFIG_LTO_CLANG_FULL=n CONFIG_LOCALVERSION_AUTO=n CONFIG_LOCALVERSION=\"-ferstart-NoKSU\" CONFIG_FB_CFB_IMAGEBLIT=y CONFIG_BUILD_ARM64_KERNEL_COMPRESSION_GZIP=y"
-          echo "KERNEL_MAKE_ENV=$KERNEL_MAKE_ENV" >> $GITHUB_ENV
+          # KERNEL_MAKE_ENV="LOCALVERSION=-Android12-9-v$(date +%Y%m%d) CONFIG_LTO_CLANG=y CONFIG_LTO_NONE=n CONFIG_LTO_CLANG_THIN=y CONFIG_LTO_CLANG_FULL=n CONFIG_LOCALVERSION_AUTO=n CONFIG_LOCALVERSION=\"-ferstart-NoKSU\" CONFIG_FB_CFB_IMAGEBLIT=y CONFIG_BUILD_ARM64_KERNEL_COMPRESSION_GZIP=y"
+          # echo "KERNEL_MAKE_ENV=$KERNEL_MAKE_ENV" >> $GITHUB_ENV
 
       - name: Download Kernel Source
         run: |
@@ -67,7 +68,23 @@ jobs:
       
       - name: Build Kernel
         run: |
+          export CROSS_COMPILE=$PARENT_DIR/clang-r416183b/bin/aarch64-linux-gnu-
+          export CC=$PARENT_DIR/clang-r416183b/bin/clang
+
+          export PLATFORM_VERSION=12
+          export ANDROID_MAJOR_VERSION=s
+          export PATH=$PARENT_DIR/clang-r416183b/bin:$PATH
+          export PATH=$PARENT_DIR/build-tools/path/linux-x86:$PATH
+          export PATH=$PARENT_DIR/gas/linux-x86:$PATH
+          export TARGET_SOC=s5e9925
+          export LLVM=1
+          export LLVM_IAS=1
+          export ARCH=arm64
+          export USE_CCACHE=1
+          KERNEL_MAKE_ENV="LOCALVERSION=-Android12-9-v$(date +%Y%m%d) CONFIG_LTO_CLANG=y CONFIG_LTO_NONE=n CONFIG_LTO_CLANG_THIN=y CONFIG_LTO_CLANG_FULL=n CONFIG_LOCALVERSION_AUTO=n CONFIG_LOCALVERSION="-ferstart-NoKSU" CONFIG_FB_CFB_IMAGEBLIT=y CONFIG_BUILD_ARM64_KERNEL_COMPRESSION_GZIP=y"
+
           cd ${{ env.KERNEL_DIR }}
+
           mkdir out
           make -j$(nproc) -C $(pwd) ${{ env.KERNEL_MAKE_ENV }} gki_defconfig
           make -j$(nproc) -C $(pwd) ${{ env.KERNEL_MAKE_ENV }}
