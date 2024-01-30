@@ -52,6 +52,8 @@ jobs:
             
       - name: Set up env
         run: |
+          DIR=`readlink -f .`
+          MAIN=`readlink -f ${DIR}/..`
           export CLANG_PATH=$GITHUB_WORKSPACE/kernel_workspace/clang-aosp/bin:$PATH
           THREAD="-j$(nproc --all)"
           export PATH=${CLANG_PATH}:${PATH}
