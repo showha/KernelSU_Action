@@ -69,8 +69,8 @@ jobs:
         run: |
           cd ${{ env.KERNEL_DIR }}
           mkdir out
-          make CC="ccache clang" CXX="ccache clang++" -j$(nproc) -C $(pwd) ${{ env.KERNEL_MAKE_ENV }} gki_defconfig
-          make CC="ccache clang" CXX="ccache clang++" -j$(nproc) -C $(pwd) ${{ env.KERNEL_MAKE_ENV }}
+          make -j$(nproc) -C $(pwd) ${{ env.KERNEL_MAKE_ENV }} gki_defconfig
+          make -j$(nproc) -C $(pwd) ${{ env.KERNEL_MAKE_ENV }}
       
       - name: Pack Kernel
         run: |
