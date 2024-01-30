@@ -52,13 +52,31 @@ jobs:
             
       - name: Setup env
         run: |
-          DIR=`readlink -f .`
-          MAIN=`readlink -f ${DIR}/..`
-          export CLANG_PATH=$GITHUB_WORKSPACE/kernel_workspace/clang-aosp/bin:$PATH
-          THREAD="-j$(nproc --all)"
-          export PATH=${CLANG_PATH}:${PATH}
+          cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel
+
+          export KERNEL_PATH=$PWD
+          # export ANYKERNEL_PATH=~/Anykernel3
+          export CLANG_PATH=$GITHUB_WORKSPACE/kernel_workspace/clang-aosp
+          export PATH=${CLANG_PATH}/bin:${PATH}
           export CLANG_TRIPLE=aarch64-linux-gnu-
-          export CROSS_COMPILE=$GITHUB_WORKSPACE/kernel_workspace/clang-aosp/bin/aarch64-linux-gnu- CC=clang CXX=clang++
+          export CROSS_COMPILE=aarch64-linux-gnu-
+          export CROSS_COMPILE_ARM32=arm-linux-gnueabi-
+          export CLANG_PREBUILT_BIN=${CLANG_PATH}/bin
+          export CC="ccache clang"
+          export CXX="ccache clang++"
+          export LD=ld.lld
+          export LLVM=1
+          export LLVM_IAS=1
+          export ARCH=arm64
+          export SUBARCH=arm64
+
+          # DIR=`readlink -f .`
+          # MAIN=`readlink -f ${DIR}/..`
+          # export CLANG_PATH=$GITHUB_WORKSPACE/kernel_workspace/clang-aosp/bin:$PATH
+          THREAD="-j$(nproc --all)"
+          # export PATH=${CLANG_PATH}:${PATH}
+          # export CLANG_TRIPLE=aarch64-linux-gnu-
+          # export CROSS_COMPILE=$GITHUB_WORKSPACE/kernel_workspace/clang-aosp/bin/aarch64-linux-gnu- CC=clang CXX=clang++
           DEFCONFIG="gki_defconfig"
 
           # Paths
@@ -67,8 +85,8 @@ jobs:
           ZIMAGE_DIR="$KERNEL_DIR/out/arch/arm64/boot"
 
           # Vars
-          export ARCH=arm64
-          export SUBARCH=$ARCH
+          # export ARCH=arm64
+          # export SUBARCH=$ARCH
           export KBUILD_BUILD_USER=showha
           export KBUILD_BUILD_HOST=xaga-arm64
           # echo "CONFIG_LOCALVERSION="-ferstart-NoKSU" >> arch/arm64/configs/xaga_defconfig
@@ -80,9 +98,9 @@ jobs:
           cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel
 
           rm .git -R
-          make LLVM=1 LLVM_IAS=1 O=out arch/arm64/configs/gki_defconfig
-          make LLVM=1 LLVM_IAS=1 O=out arch/arm64/configs/xaga_defconfig
-          make LLVM=1 LLVM_IAS=1 O=out $THREAD \
+          make O=out arch/arm64/configs/gki_defconfig
+          make O=out arch/arm64/configs/xaga_defconfig
+          make O=out $THREAD \
               LOCALVERSION=-Android12-9-v$(date +%Y%m%d-%H) \
               CONFIG_LOCALVERSION_AUTO=n \
               CONFIG_LOCALVERSION="-ferstart-NoKSU" \
