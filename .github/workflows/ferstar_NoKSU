@@ -1,0 +1,122 @@
+name: ferstar_NoKSU
+
+env:
+  KERNEL_SOURCE: 'https://github.com/ferstar/xiaomi_xaga_kernel.git'
+  KERNEL_SOURCE_BRANCH: 'mglru'
+  KERNEL_DEFCONFIG: 'xaga_defconfig'
+  KERNEL_NAME: 'ferstar'
+  CLANG_VERSION: 'r416183b1'
+
+on:
+#   schedule:
+#     - cron: '0 8 * * */5'
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: download kernel source
+        run: |
+          sudo apt-get update
+          sudo apt-get install git ccache automake flex lzop bison gperf build-essential zip curl zlib1g-dev g++-multilib libxml2-utils bzip2 libbz2-dev libbz2-1.0 libghc-bzlib-dev squashfs-tools pngcrush schedtool dpkg-dev liblz4-tool make optipng maven libssl-dev pwgen libswitch-perl policycoreutils minicom libxml-sax-base-perl libxml-simple-perl bc libc6-dev-i386 lib32ncurses5-dev libx11-dev lib32z-dev libgl1-mesa-dev xsltproc unzip device-tree-compiler python2 python3
+          cd $GITHUB_WORKSPACE && mkdir kernel_workspace && cd kernel_workspace
+          git clone ${{ env.KERNEL_SOURCE }} -b ${{ env.KERNEL_SOURCE_BRANCH }} android-kernel --depth=1
+      
+      - name: Download Clang-aosp and Gcc-aosp
+        run: |
+          cd $GITHUB_WORKSPACE/kernel_workspace
+          mkdir clang-aosp
+          # git clone --depth=1 https://github.com/kdrag0n/proton-clang  $GITHUB_WORKSPACE/kernel_workspace/clang-aosp
+          wget https://kali.download/nethunter-images/toolchains/clang-r416183b1.tar.gz
+          tar -zxvf clang-r416183b1.tar.gz -C $GITHUB_WORKSPACE/kernel_workspace/clang-aosp/
+          
+      - name: rm kernelsu && add Apatch support
+        run: |
+            cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel
+            rm -rf ./KernelSU
+
+            # echo "CONFIG_KALLSYMS=y" >> arch/arm64/configs/${{ env.KERNEL_DEFCONFIG }}
+            # echo "CONFIG_KALLSYMS_ALL=y" >> arch/arm64/configs/${{ env.KERNEL_DEFCONFIG }}
+            # echo "DEBUG_KERNEL=y" >> arch/arm64/configs/${{ env.KERNEL_DEFCONFIG }}
+            
+            # echo "CONFIG_KPROBES=y" >> arch/arm64/configs/${{ env.KERNEL_DEFCONFIG }}
+            # echo "CONFIG_HAVE_KPROBES=y" >> arch/arm64/configs/${{ env.KERNEL_DEFCONFIG }}
+            # echo "CONFIG_KPROBE_EVENTS=y" >> arch/arm64/configs/${{ env.KERNEL_DEFCONFIG }}
+            
+            # curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -
+            
+            # git clone https://github.com/nozomanai/KernelSU.git
+            # bash KernelSU/kernel/setup.sh
+            
+      - name: Set up env
+        run: |
+          export CLANG_PATH=$GITHUB_WORKSPACE/kernel_workspace/clang-aosp/bin:$PATH
+          THREAD="-j$(nproc --all)"
+          export PATH=${CLANG_PATH}:${PATH}
+          export CLANG_TRIPLE=aarch64-linux-gnu-
+          export CROSS_COMPILE=$MAIN/clang-r416183b/bin/aarch64-linux-gnu- CC=clang CXX=clang++
+          DEFCONFIG="gki_defconfig"
+
+          # Paths
+          KERNEL_DIR=`pwd`
+          ZIMAGE_DIR="$KERNEL_DIR/out/arch/arm64/boot"
+
+          # Vars
+          export ARCH=arm64
+          export SUBARCH=$ARCH
+          export KBUILD_BUILD_USER=showha
+          export KBUILD_BUILD_HOST=xaga-arm64
+          # echo "CONFIG_LOCALVERSION="-ferstart-NoKSU" >> arch/arm64/configs/xaga_defconfig
+
+          DATE_START=$(date +"%s")
+
+      - name: build kernel
+        run: |
+          cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel
+
+          rm .git -R
+          make CC="ccache clang" CXX="ccache clang++" LLVM=1 LLVM_IAS=1 O=out $DEFCONFIG
+          make CC="ccache clang" CXX="ccache clang++" LLVM=1 LLVM_IAS=1 O=out menuconfig
+          make CC='ccache clang' CXX="ccache clang++" LLVM=1 LLVM_IAS=1 O=out $THREAD \
+              LOCALVERSION=-Android12-9-v$(date +%Y%m%d-%H) \
+              CONFIG_LOCALVERSION_AUTO=n \
+              CONFIG_LOCALVERSION="-ferstart-NoKSU" \
+              CONFIG_KALLSYMS=y CONFIG_KALLSYMS_ALL=y DEBUG_KERNEL=y \
+              CONFIG_MEDIATEK_CPUFREQ_DEBUG=m CONFIG_MTK_IPI=m CONFIG_MTK_TINYSYS_MCUPM_SUPPORT=m \
+              CONFIG_MTK_MBOX=m CONFIG_RPMSG_MTK=m CONFIG_LTO_CLANG=y CONFIG_LTO_NONE=n \
+              CONFIG_LTO_CLANG_THIN=y CONFIG_LTO_CLANG_FULL=n 2>&1 | tee kernel.log
+          
+          # make -j$(nproc --all) O=out ARCH=${{ env.TARGET_ARCH }} CC=clang CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- ${{ env.BUILD_EXTRA_COMMAND }} ${{ env.KERNEL_DEFCONFIG }}
+          # make -j$(nproc --all) O=out ARCH=${{ env.TARGET_ARCH }} CC=clang CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- ${{ env.BUILD_EXTRA_COMMAND }}
+          # make O=out ../../arm64/configs/cepheus_defconfig
+
+      - name: Pack Kernel
+        run: |
+          ls -a $ZIMAGE_DIR
+          cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel
+
+          mkdir -p tmp
+
+          cp -fp $ZIMAGE_DIR/Image.gz tmp
+          cp -rp ./anykernel/* tmp
+
+          cd tmp
+
+          7za a -mx9 tmp.zip *
+
+          cd ..
+
+          rm *.zip
+          cp -fp tmp/tmp.zip Android12-$(grep "# Linux/" out/.config | cut -d " " -f 3)-v$(date +%Y%m%d-%H).zip
+          rm -rf tmp
+          
+      - name: release
+        uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          automatic_release_tag: "${{ env.BUILD_TIME }}"
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: false
+          files: |
+            kernel_workspace/android-kernel/Android12-*.zip
