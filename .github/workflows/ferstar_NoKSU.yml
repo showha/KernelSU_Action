@@ -78,7 +78,7 @@ jobs:
 
           mkdir -p tmp
 
-          cp -fp ${{ KERNEL_DIR }}/arch/arm64/boot/Image.gz tmp
+          cp -fp ${{ env.KERNEL_DIR }}/arch/arm64/boot/Image.gz tmp
           cp -rp ./anykernel/* tmp
 
           cd tmp
