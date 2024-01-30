@@ -24,16 +24,16 @@ jobs:
           mkdir android-kernel
           # DIR=`pwd`
           echo "PARENT_DIR=${GITHUB_WORKSPACE}/kernel_workspace" >> $GITHUB_ENV
-          echo "KERNEL_DIR=${{ env.PARENT_DIR }}/android-kernel" >> $GITHUB_ENV
+          echo "KERNEL_DIR=${GITHUB_WORKSPACE}/kernel_workspace/android-kernel" >> $GITHUB_ENV
 
-          echo "CROSS_COMPILE=${{ env.PARENT_DIR }}/clang-r416183b/bin/aarch64-linux-gnu-" >> $GITHUB_ENV
-          echo "CC=${{ env.PARENT_DIR }}/clang-r416183b/bin/clang" >> $GITHUB_ENV
+          echo "CROSS_COMPILE=${GITHUB_WORKSPACE}/kernel_workspace/clang-r416183b/bin/aarch64-linux-gnu-" >> $GITHUB_ENV
+          echo "CC=${GITHUB_WORKSPACE}/kernel_workspace/clang-r416183b/bin/clang" >> $GITHUB_ENV
 
           echo "PLATFORM_VERSION=12" >> $GITHUB_ENV
           echo "ANDROID_MAJOR_VERSION=s" >> $GITHUB_ENV
-          echo "PATH=${{ env.PARENT_DIR }}/clang-r416183b/bin:$PATH" >> $GITHUB_ENV
-          echo "PATH=${{ env.PARENT_DIR }}/build-tools/path/linux-x86:$PATH" >> $GITHUB_ENV
-          echo "PATH=${{ env.PARENT_DIR }}/gas/linux-x86:$PATH" >> $GITHUB_ENV
+          echo "PATH=${GITHUB_WORKSPACE}/kernel_workspace/clang-r416183b/bin:$PATH" >> $GITHUB_ENV
+          echo "PATH=${GITHUB_WORKSPACE}/kernel_workspace/build-tools/path/linux-x86:$PATH" >> $GITHUB_ENV
+          echo "PATH=${GITHUB_WORKSPACE}/kernel_workspace/gas/linux-x86:$PATH" >> $GITHUB_ENV
           echo "TARGET_SOC=s5e9925" >> $GITHUB_ENV
           echo "LLVM=1" >> $GITHUB_ENV
           echo "LLVM_IAS=1" >> $GITHUB_ENV
@@ -61,9 +61,9 @@ jobs:
       - name: Download Clang && Gas && Build_tools
         run: |
           cd ${{ env.PARENT_DIR }}
-          git clone https://github.com/crdroidandroid/android_prebuilts_clang_host_linux-x86_clang-r416183b ${{ env.PARENT_DIR }}/clang-r416183b --depth=1
-          git clone https://android.googlesource.com/platform/prebuilts/gas/linux-x86 ${{ env.PARENT_DIR }}/gas/linux-x86 --depth=1
-          git clone https://android.googlesource.com/platform/prebuilts/build-tools ${{ env.PARENT_DIR }}/build-tools --depth=1
+          git clone https://github.com/crdroidandroid/android_prebuilts_clang_host_linux-x86_clang-r416183b clang-r416183b --depth=1
+          git clone https://android.googlesource.com/platform/prebuilts/gas/linux-x86 gas/linux-x86 --depth=1
+          git clone https://android.googlesource.com/platform/prebuilts/build-tools build-tools --depth=1
       
       - name: Build Kernel
         run: |
