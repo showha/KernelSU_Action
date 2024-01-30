@@ -58,11 +58,12 @@ jobs:
           THREAD="-j$(nproc --all)"
           export PATH=${CLANG_PATH}:${PATH}
           export CLANG_TRIPLE=aarch64-linux-gnu-
-          export CROSS_COMPILE=$GITHUB_WORKSPACE/kernel_workspace/clang-aosp/bin CC=clang CXX=clang++
+          export CROSS_COMPILE=$GITHUB_WORKSPACE/kernel_workspace/clang-aosp/bin/aarch64-linux-gnu- CC=clang CXX=clang++
           DEFCONFIG="gki_defconfig"
 
           # Paths
-          KERNEL_DIR=`pwd`
+          # CONFIG_DIR="$GITHUB_WORKSPACE/kernel_workspace/android-kernel/arch/arm64/configs"
+          KERNEL_DIR="$GITHUB_WORKSPACE/kernel_workspace/android-kernel"
           ZIMAGE_DIR="$KERNEL_DIR/out/arch/arm64/boot"
 
           # Vars
@@ -79,8 +80,8 @@ jobs:
           cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel
 
           rm .git -R
-          make CC="ccache clang" CXX="ccache clang++" LLVM=1 LLVM_IAS=1 O=out $DEFCONFIG
-          make CC="ccache clang" CXX="ccache clang++" LLVM=1 LLVM_IAS=1 O=out menuconfig
+          make CC="ccache clang" CXX="ccache clang++" LLVM=1 LLVM_IAS=1 O=out $GITHUB_WORKSPACE/kernel_workspace/android-kernel/arch/arm64/configs/$DEFCONFIG
+          make CC="ccache clang" CXX="ccache clang++" LLVM=1 LLVM_IAS=1 O=out $GITHUB_WORKSPACE/kernel_workspace/android-kernel/arch/arm64/configs/menuconfig
           make CC='ccache clang' CXX="ccache clang++" LLVM=1 LLVM_IAS=1 O=out $THREAD \
               LOCALVERSION=-Android12-9-v$(date +%Y%m%d-%H) \
               CONFIG_LOCALVERSION_AUTO=n \
@@ -122,3 +123,4 @@ jobs:
           prerelease: false
           files: |
             kernel_workspace/android-kernel/Android12-*.zip
+
