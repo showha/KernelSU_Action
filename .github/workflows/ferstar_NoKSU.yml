@@ -49,8 +49,8 @@ jobs:
           cd $KERNEL_DIR
           rm -rf ./KernelSU
           rm -rf ./drivers/kernelsu
-          sed -i '/kernelsu/d' drivers/Kconfig
-          sed -i '/kernelsu/d' drivers/Makefile
+          sed -i '/kernelsu/d' $KERNEL_DIR/drivers/Kconfig
+          sed -i '/kernelsu/d' $KERNEL_DIR/drivers/Makefile
 
       - name: Download Clang && Gas && Build_tools
         run: |
