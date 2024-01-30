@@ -20,8 +20,10 @@ jobs:
       - name: Setup Envs
         run: |
           cd $GITHUB_WORKSPACE && mkdir kernel_workspace && cd kernel_workspace
-          DIR=`pwd`
-          PARENT_DIR=`readlink -f ${DIR}/..`
+          mkdir android-kernel
+          # DIR=`pwd`
+          PARENT_DIR=`pwd`
+          KERNEL_DIR=`readlink -f ${PARENT_DIR}/android-kernel`
 
           export CROSS_COMPILE=$PARENT_DIR/clang-r416183b/bin/aarch64-linux-gnu-
           export CC=$PARENT_DIR/clang-r416183b/bin/clang
@@ -40,11 +42,11 @@ jobs:
 
       - name: Download Kernel Source
         run: |
-          git clone ${{ env.KERNEL_SOURCE }} -b ${{ env.KERNEL_SOURCE_BRANCH }} android-kernel --depth=1
+          git clone ${{ env.KERNEL_SOURCE }} -b ${{ env.KERNEL_SOURCE_BRANCH }} $KERNEL_DIR --depth=1
       
       - name: Remove KernelSU
         run: |
-          cd $DIR
+          cd $KERNEL_DIR
           rm -rf ./KernelSU
           rm -rf ./drivers/kernelsu
           sed -i '/kernelsu/d' drivers/Kconfig
@@ -52,23 +54,25 @@ jobs:
 
       - name: Download Clang && Gas && Build_tools
         run: |
+          cd $PARENT_DIR
           git clone https://github.com/crdroidandroid/android_prebuilts_clang_host_linux-x86_clang-r416183b $PARENT_DIR/clang-r416183b --depth=1
           git clone https://android.googlesource.com/platform/prebuilts/gas/linux-x86 $PARENT_DIR/gas/linux-x86 --depth=1
           git clone https://android.googlesource.com/platform/prebuilts/build-tools $PARENT_DIR/build-tools --depth=1
       
       - name: Build Kernel
         run: |
+          cd $KERNEL_DIR
           mkdir out
           make CC="ccache clang" CXX="ccache clang++" -j$(nproc) -C $(pwd) $KERNEL_MAKE_ENV gki_defconfig
           make CC="ccache clang" CXX="ccache clang++" -j$(nproc) -C $(pwd) $KERNEL_MAKE_ENV
       
       - name: Pack Kernel
         run: |
-          cd $DIR
+          cd $KERNEL_DIR
 
           mkdir -p tmp
 
-          cp -fp $DIR/arch/arm64/boot/Image.gz tmp
+          cp -fp $KERNEL_DIR/arch/arm64/boot/Image.gz tmp
           cp -rp ./anykernel/* tmp
 
           cd tmp
@@ -81,8 +85,8 @@ jobs:
           cp -fp tmp/tmp.zip Android12-$(grep "# Linux/" out/.config | cut -d " " -f 3)-v$(date +%Y%m%d-%H).zip
           rm -rf tmp
 
-          # cd $DIR/anykernel
-          # cp $DIR/arch/arm64/boot/Image zImage
+          # cd $KERNEL_DIR/anykernel
+          # cp $KERNEL_DIR/arch/arm64/boot/Image zImage
           # zip -r9 $PARENT_DIR/${VARIANT}_kernel_`date '+%Y_%m_%d'`.zip * -x .git README.md *placeholder
       
       - name: release
