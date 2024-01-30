@@ -47,10 +47,14 @@ jobs:
       - name: Remove KernelSU
         run: |
           cd $KERNEL_DIR
-          rm -rf ./KernelSU
-          rm -rf ./drivers/kernelsu
+          ls -l $KERNEL_DIR
+          ls -l $KERNEL_DIR/drivers  # 添加这一行，用于查看 drivers 目录下的文件
+          ls -l $KERNEL_DIR/drivers/Kconfig  # 添加这一行，用于查看目标文件的信
+          
           sed -i '/kernelsu/d' $KERNEL_DIR/drivers/Kconfig
           sed -i '/kernelsu/d' $KERNEL_DIR/drivers/Makefile
+          rm -rf ./KernelSU
+          rm -rf ./drivers/kernelsu
 
       - name: Download Clang && Gas && Build_tools
         run: |
