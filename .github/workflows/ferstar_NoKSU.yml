@@ -8,6 +8,9 @@ env:
   CLANG_VERSION: 'r416183b1'
 
 on:
+  push:
+    branches:
+      - main
 #   schedule:
 #     - cron: '0 8 * * */5'
   workflow_dispatch:
@@ -25,6 +28,7 @@ jobs:
           # DIR=`pwd`
           echo "PARENT_DIR=${GITHUB_WORKSPACE}/kernel_workspace" >> $GITHUB_ENV
           echo "KERNEL_DIR=${GITHUB_WORKSPACE}/kernel_workspace/android-kernel" >> $GITHUB_ENV
+          echo "BUILD_TIME=$(TZ=Asia/Shanghai date "+%Y%m%d%H%M")" >> $GITHUB_ENV
 
           # echo "CROSS_COMPILE=${GITHUB_WORKSPACE}/kernel_workspace/clang-r416183b/bin/aarch64-linux-gnu-" >> $GITHUB_ENV
           # echo "CC=${GITHUB_WORKSPACE}/kernel_workspace/clang-r416183b/bin/clang" >> $GITHUB_ENV
@@ -130,3 +134,4 @@ jobs:
           prerelease: false
           files: |
             kernel_workspace/android-kernel/Android12-*.zip
+      
