@@ -93,8 +93,7 @@ jobs:
           make -j$(nproc) O=out ${{ env.KERNEL_MAKE_ENV }} gki_defconfig
           # make -j$(nproc) -C $(pwd) ${{ env.KERNEL_MAKE_ENV }}
           make O=out -j$(nproc) \
-              LOCALVERSION=-Android12-9-v$(date +%Y%m%d-%H) \
-              CONFIG_LOCALVERSION="-ferstart-NoKSU" \
+              LOCALVERSION=-Android12-v$(date +%Y%m%d-%H)-ferstart-NoKSU \
               CONFIG_KALLSYMS=y CONFIG_KALLSYMS_ALL=y DEBUG_KERNEL=y \
               CONFIG_FB_CFB_IMAGEBLIT=y CONFIG_BUILD_ARM64_KERNEL_COMPRESSION_GZIP=y \
               CONFIG_MEDIATEK_CPUFREQ_DEBUG=m CONFIG_MTK_IPI=m CONFIG_MTK_TINYSYS_MCUPM_SUPPORT=m \
@@ -129,7 +128,7 @@ jobs:
       - name: release
         uses: "marvinpinto/action-automatic-releases@latest"
         with:
-          automatic_release_tag: "${{ env.BUILD_TIME }}"
+          automatic_release_tag: 'Android12-$(grep "# Linux/" out/.config | cut -d " " -f 3)-v${{ env.BUILD_TIME }}'
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           prerelease: false
           files: |
