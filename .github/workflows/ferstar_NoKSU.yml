@@ -16,6 +16,7 @@ on:
   workflow_dispatch:
 jobs:
   build:
+    permissions: write-all
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
@@ -128,9 +129,10 @@ jobs:
       - name: release
         uses: "marvinpinto/action-automatic-releases@latest"
         with:
-          automatic_release_tag: 'Android12-$(grep "# Linux/" out/.config | cut -d " " -f 3)-v${{ env.BUILD_TIME }}'
+          automatic_release_tag: 'Android12_v${{ env.BUILD_TIME }}'
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           prerelease: false
+          title: 'Android12_v${{ env.BUILD_TIME }}'
           files: |
             kernel_workspace/android-kernel/Android12-*.zip
       
