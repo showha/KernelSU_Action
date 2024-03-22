@@ -74,7 +74,7 @@ on:
   watch:
     types: [started]
   schedule:
-    - cron: '0 8 * * */6'
+    - cron: '0 16 */6 * *'
   workflow_dispatch:
 jobs:
   build:
